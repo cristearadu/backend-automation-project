@@ -1,0 +1,15 @@
+{
+  "name": "qa-tech-test",
+  "version": "1.0.0",
+  "description": "API Testing Test for new joiners in QA",
+  "main": "index.js",
+  "scripts": {
+     "start": "json-server --watch db.json --port 3000"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "json-server": "^1.0.0-beta.1"
+  }
+}
