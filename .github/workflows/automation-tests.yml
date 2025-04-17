@@ -71,14 +71,15 @@ jobs:
         run: |
           docker compose up -d --build
           docker wait backend-automation-project-test-runner-1
+
+          # Clean old folders first
+          sudo rm -rf allure-report allure-results reports
+      
+          # Copy artifacts from container
           docker cp backend-automation-project-test-runner-1:/app/allure-report ./allure-report
           docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
           docker cp backend-automation-project-test-runner-1:/app/reports ./reports
           docker compose down
-
-      - name: Copy allure-results from container
-        run: |
-          docker cp $(docker ps -a -q --filter "ancestor=your-test-runner-image-name" --latest):/app/allure-results ./allure-results
 
       - name: Generate Allure Report
         run: |
