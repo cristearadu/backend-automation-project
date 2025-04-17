@@ -69,7 +69,12 @@ jobs:
 
       - name: Run Docker Compose Tests
         run: |
-          docker compose up --build --abort-on-container-exit --exit-code-from test-runner
+          docker compose up -d --build
+          docker wait backend-automation-project-test-runner-1
+          docker cp backend-automation-project-test-runner-1:/app/allure-report ./allure-report
+          docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
+          docker cp backend-automation-project-test-runner-1:/app/reports ./reports
+          docker compose down
 
       - name: Copy allure-results from container
         run: |
