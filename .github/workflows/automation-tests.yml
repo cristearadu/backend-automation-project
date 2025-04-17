@@ -78,7 +78,7 @@ jobs:
 
       - name: Copy Allure and Reports
         run: |
-          sudo rm -rf allure-report allure-results reports
+#          sudo rm -rf allure-report allure-results reports
           docker cp backend-automation-project-test-runner-1:/app/allure-report ./allure-report
           docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
           docker cp backend-automation-project-test-runner-1:/app/reports ./reports
