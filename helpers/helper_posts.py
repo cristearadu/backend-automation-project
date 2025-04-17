@@ -1,22 +1,10 @@
-from request_builders.request_builder_blog import BlogApiController
 from core import HTTPStatusCodes, BlogApiEndpointKeys
+from .helper import Helper
 
 
-class HelperPosts:
+class HelperPosts(Helper):
     def __init__(self):
-        self.controller = BlogApiController()
-
-    def _send_request(self, endpoint_key, expected_status, payload=None, id=None, expect_json=True):
-        response = self.controller.request(endpoint_key, payload=payload, id=id)
-        assert response.status_code == expected_status, \
-            f"Expected status code {expected_status}. Actual status code: {response.status_code}"
-
-        if expect_json:
-            try:
-                return response.json()
-            except ValueError:
-                return {}
-        return None
+        super().__init__()
 
     def get_posts(self, expected_status=HTTPStatusCodes.OK.value) -> list:
         return self._send_request(BlogApiEndpointKeys.GET_POSTS, expected_status)

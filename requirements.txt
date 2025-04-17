@@ -4,3 +4,4 @@ faker
 pydantic
 pytest-xdist
 allure-pytest
+pytest-rerunfailures

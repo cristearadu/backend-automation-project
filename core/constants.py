@@ -31,6 +31,12 @@ class PostFields(Enum):
     AUTHOR = "author"
 
 
+class CommentFields(Enum):
+    ID = "id"
+    BODY = "body"
+    POST_ID = "postId"
+
+
 class BlogApiEndpointKeys(str, Enum):
     GET_POSTS = "GET_POSTS"
     GET_POST_BY_ID = "GET_POST_BY_ID"
