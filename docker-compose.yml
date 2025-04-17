@@ -32,6 +32,10 @@ services:
       start_period: 5s
 
   test-runner:
+    volumes:
+      - ./allure-results:/app/allure-results
+      - ./allure-report:/app/allure-report
+      - ./output:/app/output
     build:
       context: .
       dockerfile: Dockerfile
