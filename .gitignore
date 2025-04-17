@@ -1,7 +1,7 @@
 node_modules
 .venv
 .idea
-.output
-.allure-report
-.allure-results
+output
+allure-report
+allure-results
 db.json
