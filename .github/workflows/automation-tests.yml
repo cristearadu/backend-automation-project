@@ -67,6 +67,11 @@ jobs:
           sudo mv allure-2.24.0 /opt/allure
           sudo ln -s /opt/allure/bin/allure /usr/bin/allure
 
+      - name: Prepare Allure results folder
+        run: |
+          mkdir -p /home/runner/work/backend-automation-project/backend-automation-project/allure-report
+          chmod -R 777 /home/runner/work/backend-automation-project/backend-automation-project/allure-report
+
       - name: Run Docker Compose Tests
         run: |
           docker compose up -d --build
