@@ -71,17 +71,15 @@ jobs:
 
       - name: Upload Allure Results
         uses: actions/upload-artifact@v4
-        if: always()
         with:
           name: allure-results
-          path: allure-results/
+          path: reports/allure-results/
 
       - name: Upload Allure HTML Report
         uses: actions/upload-artifact@v4
-        if: always()
         with:
-          name: allure-report
-          path: allure-report/
+          name: allure-html
+          path: reports/allure-report/
 
       - name: Upload Output Logs
         uses: actions/upload-artifact@v4
