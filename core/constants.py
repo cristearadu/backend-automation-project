@@ -1,4 +1,5 @@
 import os
+import uuid
 from enum import Enum
 
 BASE_URL = os.getenv("BASE_URL", "http://localhost:3000")
@@ -7,6 +8,8 @@ COMMENTS_ENDPOINT = "/comments"
 PROFILE_ENDPOINT = "/profile"
 ROOT_WORKING_DIRECTORY = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOGS_FOLDER = 'output'
+NONEXISTENT_ID = uuid.uuid4()
+EXTRA_FIELD = "extra_field"
 
 
 class HTTPStatusCodes(Enum):
@@ -20,6 +23,12 @@ class HTTPStatusCodes(Enum):
     TOO_MANY_REUQESTS = 429
     INTERNAL_SERVER_ERROR = 500
     SERVICE_UNAVAILABLE = 503
+
+
+class PostFields(Enum):
+    ID = "id"
+    TITLE = "title"
+    AUTHOR = "author"
 
 
 class BlogApiEndpointKeys(str, Enum):

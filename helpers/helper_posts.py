@@ -6,32 +6,29 @@ class HelperPosts:
     def __init__(self):
         self.controller = BlogApiController()
 
-    def get_posts(self, expected_status=HTTPStatusCodes.OK.value) -> list:
-        response = self.controller.request(BlogApiEndpointKeys.GET_POSTS)
+    def _send_request(self, endpoint_key, expected_status, payload=None, id=None, expect_json=True):
+        response = self.controller.request(endpoint_key, payload=payload, id=id)
         assert response.status_code == expected_status, \
             f"Expected status code {expected_status}. Actual status code: {response.status_code}"
-        return response.json()
 
-    def get_post_by_id(self, post_id, expected_status=HTTPStatusCodes.OK.value):
-        response = self.controller.request(BlogApiEndpointKeys.GET_POST_BY_ID, id=post_id)
-        assert response.status_code == expected_status, \
-            f"Expected status code {expected_status}. Actual status code: {response.status_code}"
-        return response.json() if response.status_code == HTTPStatusCodes.OK.value else {}
+        if expect_json:
+            try:
+                return response.json()
+            except ValueError:
+                return {}
+        return None
+
+    def get_posts(self, expected_status=HTTPStatusCodes.OK.value) -> list:
+        return self._send_request(BlogApiEndpointKeys.GET_POSTS, expected_status)
+
+    def get_post_by_id(self, post_id, expected_status=HTTPStatusCodes.OK.value, expect_json=True):
+        return self._send_request(BlogApiEndpointKeys.GET_POST_BY_ID, expected_status, id=post_id, expect_json=expect_json)
 
     def create_post(self, payload, expected_status=HTTPStatusCodes.CREATED.value):
-        response = self.controller.request(BlogApiEndpointKeys.CREATE_POST, payload=payload)
-        assert response.status_code == expected_status, \
-            f"Expected status code {expected_status}. Actual status code: {response.status_code}"
-        return response.json()
+        return self._send_request(BlogApiEndpointKeys.CREATE_POST, expected_status, payload=payload)
 
     def update_post(self, post_id, payload, expected_status=HTTPStatusCodes.OK.value):
-        response = self.controller.request(BlogApiEndpointKeys.UPDATE_POST, id=post_id, payload=payload)
-        assert response.status_code == expected_status, \
-            f"Expected status code {expected_status}. Actual status code: {response.status_code}"
-        return response.json()
+        return self._send_request(BlogApiEndpointKeys.UPDATE_POST, expected_status, payload=payload, id=post_id)
 
-    def delete_post(self, post_id, expected_status=HTTPStatusCodes.OK.value):
-        response = self.controller.request(BlogApiEndpointKeys.DELETE_POST, id=post_id)
-        assert response.status_code == expected_status, \
-            f"Expected status code {expected_status}. Actual status code: {response.status_code}"
-        return response.json()
+    def delete_post(self, post_id, expected_status=HTTPStatusCodes.OK.value, expect_json=True):
+        return self._send_request(BlogApiEndpointKeys.DELETE_POST, expected_status, id=post_id, expect_json=expect_json)
