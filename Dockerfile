@@ -33,4 +33,4 @@ ARG TEST_TYPE=regression
 ENV TEST_TYPE=${TEST_TYPE}
 
 # Start json-server in background, wait, then run tests
-CMD pytest -n auto -m ${TEST_TYPE} --alluredir=allure-results && allure generate allure-results --clean -o allure-report
+CMD pytest -n auto -m ${TEST_TYPE} --alluredir=allure-results --junitxml=reports/junit.xml && allure generate allure-results --clean -o allure-report

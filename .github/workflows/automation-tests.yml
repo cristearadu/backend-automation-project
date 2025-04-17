@@ -66,7 +66,7 @@ jobs:
         uses: mikepenz/action-junit-report@v4
         if: always()
         with:
-          report_paths: allure-results/**/*.xml
+          report_paths: reports/junit.xml
           check_name: Backend API Pytest Results
 
       - name: Upload Allure Results
