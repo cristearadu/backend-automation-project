@@ -71,6 +71,10 @@ jobs:
         run: |
           docker compose up --build --abort-on-container-exit --exit-code-from test-runner
 
+      - name: Copy allure-results from container
+        run: |
+          docker cp $(docker ps -a -q --filter "ancestor=your-test-runner-image-name" --latest):/app/allure-results ./allure-results
+
       - name: Generate Allure Report
         run: |
           sudo rm -rf allure-report
