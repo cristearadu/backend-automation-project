@@ -25,7 +25,7 @@ def test_post_response_matches_schema(helper_posts, new_post_payload):
     pytest.logger.info(f"Created post for schema validation: {create_post_response}")
 
     pytest.logger.info("Validating post schema with PostModel...")
-    post_obj = PostModel(**create_post_response)
+
     try:
         PostModel(**create_post_response)
     except ValidationError as e:

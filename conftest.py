@@ -4,7 +4,7 @@ import os
 import http.client as http_client
 from datetime import datetime
 from core import ROOT_WORKING_DIRECTORY, LOGS_FOLDER
-from helpers import HelperPosts, HelperComments
+from helpers import HelperPosts, HelperComments, HelperProfile
 from faker import Faker
 
 
@@ -95,3 +95,8 @@ def helper_posts():
 @pytest.fixture(scope='session')
 def helper_comments():
     yield HelperComments()
+
+
+@pytest.fixture(scope='session')
+def helper_profile():
+    yield HelperProfile()
