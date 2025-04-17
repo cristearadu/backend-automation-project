@@ -4,7 +4,7 @@ import os
 import http.client as http_client
 from datetime import datetime
 from core import ROOT_WORKING_DIRECTORY, LOGS_FOLDER
-from helpers import HelperPosts
+from helpers import HelperPosts, HelperComments
 from faker import Faker
 
 
@@ -54,6 +54,10 @@ def pytest_configure(config):
 
     pytest.logger = logger
 
+    # register a custom marker: flaky + regression
+    config.addinivalue_line("markers", "flaky_regression: Combines regression + flaky retry for unstable tests")
+    setattr(pytest.mark, "flaky_regression",
+            pytest.mark.regression(pytest.mark.flaky(reruns=3, reruns_delay=1)))
 
 def pytest_runtest_call(item):
     """
@@ -74,11 +78,19 @@ def pytest_collection_modifyitems(session, config, items):
     # Reorder items: smoke tests first
     items[:] = smoke_tests + other_tests
 
+    # TODO reorder test to always run profile -> posts -> comments
+
 
 @pytest.fixture(scope="session")
 def faker_fixture():
     return Faker()
 
-@pytest.fixture
+
+@pytest.fixture(scope='session')
 def helper_posts():
-    return HelperPosts()
+    yield HelperPosts()
+
+
+@pytest.fixture(scope='session')
+def helper_comments():
+    yield HelperComments()
