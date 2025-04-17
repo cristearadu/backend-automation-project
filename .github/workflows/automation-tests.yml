@@ -69,8 +69,8 @@ jobs:
 
       - name: Prepare Allure results folder
         run: |
-          mkdir -p /home/runner/work/backend-automation-project/backend-automation-project/allure-report
-          chmod -R 777 /home/runner/work/backend-automation-project/backend-automation-project/allure-report
+          docker exec backend-automation-project-test-runner-1 mkdir -p /app/allure-report /app/allure-results /app/reports
+          docker exec backend-automation-project-test-runner-1 chmod -R 777 /app/allure-report /app/allure-results /app/reports
 
       - name: Run Docker Compose Tests
         run: |

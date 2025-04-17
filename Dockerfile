@@ -32,6 +32,8 @@ RUN pip install -r requirements.txt
 # Set test type as build arg/env
 ARG TEST_TYPE=regression
 ENV TEST_TYPE=${TEST_TYPE}
+RUN mkdir -p /app/allure-report /app/allure-results /app/reports
+RUN chmod -R 777 /app/allure-report /app/allure-results /app/reports
 
 # Start json-server in background, wait, then run tests
 CMD pytest -n auto -m ${TEST_TYPE} --alluredir=allure-results --junitxml=reports/junit.xml || true && allure generate allure-results --clean -o allure-report
