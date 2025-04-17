@@ -80,13 +80,13 @@ jobs:
           docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
           docker cp backend-automation-project-test-runner-1:/app/reports ./reports
 
+          # Fix permissions
           sudo chown -R runner:docker allure-report allure-results reports
 
           docker compose down
 
       - name: Generate Allure Report
         run: |
-          sudo rm -rf allure-report
           allure generate allure-results --clean -o allure-report
 #          docker compose run --rm test-runner allure generate allure-results --clean -o allure-report
 
