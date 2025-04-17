@@ -67,32 +67,27 @@ jobs:
           sudo mv allure-2.24.0 /opt/allure
           sudo ln -s /opt/allure/bin/allure /usr/bin/allure
 
-      - name: Prepare Allure results folder
-        run: |
-          docker exec backend-automation-project-test-runner-1 mkdir -p /app/allure-report /app/allure-results /app/reports
-          docker exec backend-automation-project-test-runner-1 chmod -R 777 /app/allure-report /app/allure-results /app/reports
-
       - name: Run Docker Compose Tests
         run: |
           docker compose up -d --build
           docker wait backend-automation-project-test-runner-1
 
-          # Clean old folders first
-          sudo rm -rf allure-report allure-results reports
+      - name: Prepare Allure results folder
+        run: |
+          docker exec backend-automation-project-test-runner-1 mkdir -p /app/allure-report /app/allure-results /app/reports
+          docker exec backend-automation-project-test-runner-1 chmod -R 777 /app/allure-report /app/allure-results /app/reports
 
+      - name: Copy Allure and Reports
+        run: |
+          sudo rm -rf allure-report allure-results reports
           docker cp backend-automation-project-test-runner-1:/app/allure-report ./allure-report
           docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
           docker cp backend-automation-project-test-runner-1:/app/reports ./reports
-
-          # Fix permissions
           sudo chown -R runner:docker allure-report allure-results reports
 
-          docker compose down
-
-      - name: Generate Allure Report
+      - name: Docker Compose Down
         run: |
-          allure generate allure-results --clean -o allure-report
-#          docker compose run --rm test-runner allure generate allure-results --clean -o allure-report
+          docker compose down
 
       - name: Publish JUnit Test Report to GitHub Checks
         uses: mikepenz/action-junit-report@v4
