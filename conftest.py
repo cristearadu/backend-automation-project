@@ -59,6 +59,7 @@ def pytest_configure(config):
     setattr(pytest.mark, "flaky_regression",
             pytest.mark.regression(pytest.mark.flaky(reruns=3, reruns_delay=1)))
 
+
 def pytest_runtest_call(item):
     """
     Hook to log test docstrings before execution.

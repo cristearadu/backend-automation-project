@@ -152,3 +152,15 @@ def test_update_comment_with_empty_payload(helper_comments, create_valid_post, n
         payload={},
         expected_status=HTTPStatusCodes.BAD_REQUEST.value
     )
+
+
+@pytest.mark.comments
+@pytest.mark.negative
+@pytest.mark.flaky_regression
+@pytest.mark.xfail(reason="COMMENT cannot be created with inexistent POST ID")
+def test_create_comment_with_nonexistent_post_id(helper_comments, new_comment_payload, faker_fixture):
+    """Try to create a comment linked to a non-existent post."""
+    invalid_post_id = faker_fixture.random_int(min=1000, max=9999)
+    new_comment_payload[CommentFields.POST_ID.value] = invalid_post_id
+
+    helper_comments.create_comment(payload=new_comment_payload, expected_status=HTTPStatusCodes.NOT_FOUND.value)
