@@ -8,10 +8,11 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean
 
 # Install Allure CLI
-RUN curl -o allure.zip -Ls https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.zip && \
-    unzip allure.zip -d /opt/ && \
-    ln -s /opt/allure-2.27.0/bin/allure /usr/bin/allure && \
-    rm allure.zip
+RUN apt-get update && \
+    apt-get install -y curl unzip && \
+    curl -o allure-2.24.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.24.0/allure-2.24.0.zip && \
+    unzip allure-2.24.0.zip -d /opt/ && \
+    ln -s /opt/allure-2.24.0/bin/allure /usr/bin/allure
 
 WORKDIR /app
 
