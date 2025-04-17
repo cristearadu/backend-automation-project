@@ -1,3 +1,4 @@
+import pytest
 from request_builders.request_builder_blog import BlogApiController
 from core import HTTPStatusCodes, BlogApiEndpointKeys
 
@@ -7,6 +8,7 @@ class HelperPosts:
         self.controller = BlogApiController()
 
     def _send_request(self, endpoint_key, expected_status, payload=None, id=None, expect_json=True):
+        pytest.logger.info(f"Sending request: {endpoint_key}")
         response = self.controller.request(endpoint_key, payload=payload, id=id)
         assert response.status_code == expected_status, \
             f"Expected status code {expected_status}. Actual status code: {response.status_code}"
