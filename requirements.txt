@@ -1,1 +1,6 @@
 pytest
+requests
+faker
+pydantic
+pytest-xdist
+allure-pytest
