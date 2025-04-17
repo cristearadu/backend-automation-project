@@ -79,6 +79,9 @@ jobs:
           docker cp backend-automation-project-test-runner-1:/app/allure-report ./allure-report
           docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
           docker cp backend-automation-project-test-runner-1:/app/reports ./reports
+
+          sudo chown -R runner:docker allure-report allure-results reports
+
           docker compose down
 
       - name: Generate Allure Report
