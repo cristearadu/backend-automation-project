@@ -1,0 +1,91 @@
+name: Backend Automation API Tests
+
+permissions:
+  checks: write
+  contents: read
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to run tests on"
+        required: true
+        default: "main"
+        type: string
+      test_type:
+        description: "Test suite to run"
+        required: true
+        default: "regression"
+        type: choice
+        options:
+          - smoke
+          - regression
+          - schema
+          - posts
+          - negative
+          - edgecase
+          - performance
+
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+  schedule:
+    - cron: "0 0 * * *"  # every night at midnight UTC
+
+jobs:
+  docker-api-tests:
+    name: Run Docker API Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set test type environment variable
+        id: set-test-type
+        run: |
+          echo "TEST_TYPE=${{ github.event.inputs.test_type || 'regression' }}" >> $GITHUB_ENV
+
+      - name: Set branch (optional if needed later)
+        run: |
+          echo "Running tests from branch: ${{ github.event.inputs.branch || github.ref_name }}"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Run Docker Compose Tests
+        run: |
+          docker-compose up --build --abort-on-container-exit
+
+      - name: Publish JUnit Test Report to GitHub Checks
+        uses: mikepenz/action-junit-report@v4
+        if: always()
+        with:
+          report_paths: allure-results/**/*.xml
+          check_name: Backend API Pytest Results
+
+      - name: Upload Allure Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results
+          path: allure-results/
+
+      - name: Upload Allure HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-report
+          path: allure-report/
+
+      - name: Upload Output Logs
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: output-logs
+          path: output/
