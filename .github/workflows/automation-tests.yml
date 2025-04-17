@@ -74,12 +74,10 @@ jobs:
 
           # Clean old folders first
           sudo rm -rf allure-report allure-results reports
-      
-          # Copy artifacts from container
-          docker cp backend-automation-project-test-runner-1:/app/allure-report ./allure-report
+          docker cp backend-automation-project-test-runner-1:/app/allure-report/allure-report ./allure-report
           docker cp backend-automation-project-test-runner-1:/app/allure-results ./allure-results
           docker cp backend-automation-project-test-runner-1:/app/reports ./reports
-
+     
           # Fix permissions
           sudo chown -R runner:docker allure-report allure-results reports
 
