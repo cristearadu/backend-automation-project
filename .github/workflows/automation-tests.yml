@@ -70,7 +70,6 @@ jobs:
       - name: Run Docker Compose Tests
         run: |
           docker compose up -d --build
-          docker wait backend-automation-project-test-runner-1
 
       - name: Prepare Allure results folder
         run: |
