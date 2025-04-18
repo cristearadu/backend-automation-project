@@ -10,14 +10,14 @@ from core import HTTPStatusCodes, CommentFields, PostFields
 def test_create_post_and_comment(helper_posts, helper_comments, new_post_payload, new_comment_payload):
     """Test the full flow: create post -> create comment on post -> validate comment.
     """
-    # Step 1: Create a new post
+    pytest.logger.info("# Step 1: Create a new post")
     created_post = helper_posts.create_post(payload=new_post_payload)
     pytest.logger.info(f"Created post: {created_post}")
 
     # Validate created post schema
     post_obj = PostModel(**created_post)
 
-    # Step 2: Create a comment related to the post
+    pytest.logger.info("# Step 2: Create a comment related to the post")
     new_comment_payload[CommentFields.POST_ID.value] = post_obj.id
     created_comment = helper_comments.create_comment(payload=new_comment_payload)
     pytest.logger.info(f"Created comment: {created_comment}")
@@ -25,7 +25,7 @@ def test_create_post_and_comment(helper_posts, helper_comments, new_post_payload
     # Validate created comment schema
     comment_obj = CommentModel(**created_comment)
 
-    # Step 3: Fetch the comment by ID and validate contents
+    pytest.logger.info("# Step 3: Fetch the comment by ID and validate contents")
     fetched_comment = helper_comments.get_comment_by_id(comment_id=comment_obj.id)
     assert fetched_comment[CommentFields.POST_ID.value] == post_obj.id, \
         (f"Comment postId does not match the created post ID. Expected response: {post_obj.id}. "
@@ -42,11 +42,11 @@ def test_create_update_delete_comment(helper_posts, helper_comments, new_post_pa
                                       faker_fixture):
     """Test the full flow: create post -> create comment -> update comment -> delete comment -> validate deletion.
     """
-    # Step 1: Create a new post
+    pytest.logger.info("# Step 1: Create a new post")
     created_post = helper_posts.create_post(payload=new_post_payload)
     pytest.logger.info(f"Created post: {created_post}")
 
-    # Step 2: Create a new comment on that post
+    pytest.logger.info("# Step 2: Create a new comment on that post")
     new_comment_payload[CommentFields.POST_ID.value] = created_post["id"]
     created_comment = helper_comments.create_comment(payload=new_comment_payload)
     pytest.logger.info(f"Created comment: {created_comment}")
@@ -54,7 +54,7 @@ def test_create_update_delete_comment(helper_posts, helper_comments, new_post_pa
     # Validate created comment schema
     comment_obj = CommentModel(**created_comment)
 
-    # Step 3: Update the comment body
+    pytest.logger.info("# Step 3: Update the comment body")
     updated_payload = {
         CommentFields.BODY.value: faker_fixture.sentence(nb_words=10),
         CommentFields.POST_ID.value: created_post["id"],
@@ -67,11 +67,11 @@ def test_create_update_delete_comment(helper_posts, helper_comments, new_post_pa
         (f"Updated comment body mismatch. Expected: {updated_payload[CommentFields.BODY.value]}, "
          f"Actual: {updated_comment[CommentFields.BODY.value]}")
 
-    # Step 4: Delete the comment
+    pytest.logger.info("# Step 4: Delete the comment")
     deleted_comment = helper_comments.delete_comment(comment_id=comment_obj.id)
     pytest.logger.info(f"Deleted comment: {deleted_comment}")
 
-    # Step 5: Attempt to fetch deleted comment (should result in 404)
+    pytest.logger.info("# Step 5: Attempt to fetch deleted comment (should result in 404)")
     helper_comments.get_comment_by_id(comment_id=comment_obj.id, expected_status=404, expect_json=False)
 
 
@@ -82,19 +82,21 @@ def test_create_update_delete_comment(helper_posts, helper_comments, new_post_pa
 def test_create_multiple_posts_and_comments(helper_posts, helper_comments, new_post_payload, new_comment_payload):
     """Create multiple posts and comments, then validate postId relations."""
     posts = []
+    pytest.logger.info("# Step 1: Create multiple posts")
     for _ in range(2):
         post = helper_posts.create_post(payload=new_post_payload)
         posts.append(PostModel(**post))
         pytest.logger.info(f"Created post: {post}")
 
     comments = []
+    pytest.logger.info("# Step 2: Create multiple comments for the created posts")
     for post in posts:
         new_comment_payload[CommentFields.POST_ID.value] = post.id
         comment = helper_comments.create_comment(payload=new_comment_payload)
         comments.append(CommentModel(**comment))
         pytest.logger.info(f"Created comment for post {post.id}: {comment}")
 
-    # Validate comments are linked to correct posts
+    pytest.logger.info("# Step 3: Validate comments are linked to correct posts")
     for comment, post in zip(comments, posts):
         assert comment.postId == post.id, f"Comment postId mismatch. Expected: {post.id}, Actual: {comment.postId}"
 
@@ -109,13 +111,13 @@ def test_update_post_with_existing_comments(helper_posts, helper_comments, new_p
     post_obj = PostModel(**post)
     pytest.logger.info(f"Created post: {post_obj}")
 
-    # Create comment attached to post
+    pytest.logger.info("# Step 1: Create comment attached to post")
     new_comment_payload[CommentFields.POST_ID.value] = post_obj.id
     comment = helper_comments.create_comment(payload=new_comment_payload)
     comment_obj = CommentModel(**comment)
     pytest.logger.info(f"Created comment: {comment_obj}")
 
-    # Update the post
+    pytest.logger.info("# Step 2: Update the post")
     updated_payload = {
         PostFields.TITLE.value: faker_fixture.sentence(nb_words=5),
         PostFields.AUTHOR.value: faker_fixture.name()
@@ -123,7 +125,7 @@ def test_update_post_with_existing_comments(helper_posts, helper_comments, new_p
     updated_post = helper_posts.update_post(post_id=post_obj.id, payload=updated_payload)
     pytest.logger.info(f"Updated post: {updated_post}")
 
-    # Fetch the comment again
+    pytest.logger.info("# Step 3: Fetch the comment again")
     fetched_comment = helper_comments.get_comment_by_id(comment_id=comment_obj.id)
     assert fetched_comment[CommentFields.POST_ID.value] == post_obj.id, \
         (f"Fetched comment postId mismatch after post update. Expected: {post_obj.id}, "
@@ -140,21 +142,20 @@ def test_delete_post_and_validate_comments(helper_posts, helper_comments, new_po
     post_obj = PostModel(**post)
     pytest.logger.info(f"Created post: {post_obj}")
 
-    # Create comment attached to post
+    pytest.logger.info("# Step 1: Create comment attached to post")
     new_comment_payload[CommentFields.POST_ID.value] = post_obj.id
     comment = helper_comments.create_comment(payload=new_comment_payload)
     comment_obj = CommentModel(**comment)
     pytest.logger.info(f"Created comment: {comment_obj}")
 
-    # Delete the post
+    pytest.logger.info("# Step 2: Delete the post")
     deleted_post = helper_posts.delete_post(post_id=post_obj.id)
     pytest.logger.info(f"Deleted post: {deleted_post}")
 
-    # Try fetching the comment
+    pytest.logger.info("# Step 3: Try fetching the comment")
     fetched_comment = helper_comments.get_comment_by_id(comment_id=comment_obj.id, expected_status=HTTPStatusCodes.OK.value)
     pytest.logger.info(f"Fetched comment after post deletion: {fetched_comment}")
 
-    # Validate the comment still exists (JSON Server behavior)
+    pytest.logger.info("# Step 4: Validate the comment still exists (JSON Server behavior)")
     assert fetched_comment[CommentFields.ID.value] == comment_obj.id, \
         f"Expected comment ID {comment_obj.id}, got {fetched_comment[CommentFields.ID.value]}"
-
