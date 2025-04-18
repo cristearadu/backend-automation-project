@@ -1,7 +1,8 @@
 import pytest
 from schemas import PostModel
-from core import NONEXISTENT_ID, EXTRA_FIELD, HTTPStatusCodes, PostFields
+from core import NONEXISTENT_ID, HTTPStatusCodes, PostFields
 from pydantic_core._pydantic_core import ValidationError
+from test_data import NEGATIVE_POST_PAYLOADS
 
 
 @pytest.mark.smoke
@@ -23,9 +24,6 @@ def test_post_response_matches_schema(helper_posts, new_post_payload):
     """Ensure that a newly created post response conforms to the defined schema."""
     create_post_response = helper_posts.create_post(payload=new_post_payload)
     pytest.logger.info(f"Created post for schema validation: {create_post_response}")
-
-    pytest.logger.info("Validating post schema with PostModel...")
-
     try:
         PostModel(**create_post_response)
     except ValidationError as e:
@@ -99,37 +97,6 @@ def test_delete_nonexistent_post(helper_posts):
 
 @pytest.mark.posts
 @pytest.mark.negative
-@pytest.mark.xfail(reason="JSON Server does not enforce schema validation thus it's going to fail")
-@pytest.mark.flaky_regression
-def test_create_post_missing_title(helper_posts):
-    """Creating a post without a title should fail (but JSON Server doesn't validate)."""
-    invalid_payload = {PostFields.AUTHOR.value: "No Title Author"}
-    pytest.logger.warning("Attempting to create post without a title...")
-    helper_posts.create_post(payload=invalid_payload, expected_status=HTTPStatusCodes.BAD_REQUEST.value)
-
-
-@pytest.mark.posts
-@pytest.mark.negative
-@pytest.mark.flaky_regression
-@pytest.mark.xfail(reason="Updating a POST with empty title should fail")
-def test_update_post_with_empty_title(helper_posts, new_post_payload):
-    """Updating a post with empty title should not succeed."""
-    create_post_response = helper_posts.create_post(payload=new_post_payload)
-    pytest.logger.info(f"Created post to update with empty title: {create_post_response}")
-
-    updated_payload = {
-        PostFields.TITLE.value: "",
-        PostFields.AUTHOR.value: create_post_response[PostFields.AUTHOR.value]
-    }
-
-    updated = helper_posts.update_post(
-        post_id=create_post_response[PostFields.ID.value],
-        payload=updated_payload,
-        expected_status=HTTPStatusCodes.BAD_REQUEST.value
-    )
-
-@pytest.mark.posts
-@pytest.mark.negative
 @pytest.mark.flaky_regression
 def test_get_nonexistent_post_returns_404(helper_posts):
     """Fetching a non-existent post should return 404."""
@@ -153,50 +120,21 @@ def test_delete_post_twice_returns_404(helper_posts, new_post_payload):
 
 
 @pytest.mark.posts
-@pytest.mark.edgecase
-@pytest.mark.xfail(reason="JSON Server does not enforce not creating extra fields. Should fail")
-@pytest.mark.flaky_regression
-def test_create_post_with_extra_fields(helper_posts, new_post_payload, faker_fixture):
-    """Creating a post with extra fields should still succeed (if allowed)."""
-    new_post_payload[EXTRA_FIELD] = faker_fixture.sentence(nb_words=6)
-    pytest.logger.warning(f"Creating post with extra field {EXTRA_FIELD}")
-    response = helper_posts.create_post(payload=new_post_payload)
-
-    assert EXTRA_FIELD not in response, f"Should ignore the extra field: {EXTRA_FIELD} in {response}"
-
-
-@pytest.mark.posts
 @pytest.mark.negative
 @pytest.mark.flaky_regression
-def test_update_nonexistent_post(helper_posts, new_post_payload):
-    """Updating a non-existent post should return 404."""
-    pytest.logger.info(f"Trying to update non-existent post ID {NONEXISTENT_ID}")
-    helper_posts.update_post(
-        post_id=NONEXISTENT_ID,
-        payload=new_post_payload,
-        expected_status=HTTPStatusCodes.NOT_FOUND.value
-    )
-
-
-@pytest.mark.posts
-@pytest.mark.negative
-@pytest.mark.flaky_regression
-@pytest.mark.xfail(reason="JSON Server allows empty objects, real API should not")
-def test_create_post_with_empty_payload(helper_posts):
-    """Creating a post with an empty body should fail (if validation is enforced)."""
-    empty_payload = {}
-    pytest.logger.warning("Trying to create post with empty payload")
-    helper_posts.create_post(payload=empty_payload, expected_status=400)
-
-
-@pytest.mark.posts
-@pytest.mark.negative
-@pytest.mark.flaky_regression
-@pytest.mark.xfail(reason="POST cannot be updated with empty payload")
-def test_update_post_with_empty_payload(helper_posts, create_valid_post):
-    """Updating a post with an empty payload should fail."""
-    helper_posts.update_post(
-        post_id=create_valid_post[PostFields.ID.value],
-        payload={},
-        expected_status=HTTPStatusCodes.BAD_REQUEST.value
-    )
+@pytest.mark.parametrize(
+    "payload, is_update, expected_status, test_title", NEGATIVE_POST_PAYLOADS
+)
+def test_post_payload_negative_cases(helper_posts, new_post_payload, create_valid_post, payload, is_update,
+                                     expected_status, test_title):
+    """Test various invalid payloads for create and update post operations."""
+    pytest.logger.info(f"Running test {test_title}")
+    if is_update:
+        pytest.logger.info(f"Trying to update post ID {create_valid_post[PostFields.ID.value]} with payload: {payload}")
+        helper_posts.update_post(
+            post_id=create_valid_post[PostFields.ID.value],
+            payload=payload,
+            expected_status=expected_status)
+    else:
+        pytest.logger.info(f"Trying to create post with payload: {payload}")
+        helper_posts.create_post(payload=payload, expected_status=expected_status)

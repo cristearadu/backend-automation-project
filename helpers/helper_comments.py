@@ -3,6 +3,10 @@ from .helper import Helper
 
 
 class HelperComments(Helper):
+    """
+    Helper class for handling all operations related to /comments endpoints.
+    Includes create, retrieve, update, and delete functionalities for comments.
+    """
     def __init__(self):
         super().__init__()
 

@@ -2,6 +2,7 @@ import pytest
 from schemas import CommentModel
 from core import HTTPStatusCodes, CommentFields, PostFields, NONEXISTENT_ID
 from pydantic_core._pydantic_core import ValidationError
+from test_data import NEGATIVE_COMMENT_PAYLOADS
 
 
 @pytest.mark.smoke
@@ -142,25 +143,21 @@ def test_delete_nonexistent_comment_fails(helper_comments):
 @pytest.mark.comments
 @pytest.mark.negative
 @pytest.mark.flaky_regression
-@pytest.mark.xfail(reason="COMMENT cannot be updated with empty payload")
-def test_update_comment_with_empty_payload(helper_comments, create_valid_post, new_comment_payload):
-    """Updating a comment with an empty payload should fail."""
-    new_comment_payload[CommentFields.POST_ID.value] = create_valid_post[PostFields.ID.value]
-    created_comment = helper_comments.create_comment(payload=new_comment_payload)
-    helper_comments.update_comment(
-        comment_id=created_comment[CommentFields.ID.value],
-        payload={},
-        expected_status=HTTPStatusCodes.BAD_REQUEST.value
-    )
-
-
-@pytest.mark.comments
-@pytest.mark.negative
-@pytest.mark.flaky_regression
-@pytest.mark.xfail(reason="COMMENT cannot be created with inexistent POST ID")
-def test_create_comment_with_nonexistent_post_id(helper_comments, new_comment_payload, faker_fixture):
-    """Try to create a comment linked to a non-existent post."""
-    invalid_post_id = faker_fixture.random_int(min=1000, max=9999)
-    new_comment_payload[CommentFields.POST_ID.value] = invalid_post_id
-
-    helper_comments.create_comment(payload=new_comment_payload, expected_status=HTTPStatusCodes.NOT_FOUND.value)
+@pytest.mark.parametrize(
+    "payload, is_update, expected_status, test_title", NEGATIVE_COMMENT_PAYLOADS
+)
+def test_comment_payloads_negative_cases(helper_comments, payload, is_update, expected_status, test_title,
+                                         create_valid_post, new_comment_payload):
+    """Test invalid comment creation payloads."""
+    pytest.logger.info(f"Running test {test_title}")
+    if is_update:
+        new_comment_payload[CommentFields.POST_ID.value] = create_valid_post[PostFields.ID.value]
+        created_comment = helper_comments.create_comment(payload=new_comment_payload)
+        helper_comments.update_comment(
+            comment_id=created_comment[CommentFields.ID.value],
+            payload=payload,
+            expected_status=HTTPStatusCodes.BAD_REQUEST.value
+        )
+    else:
+        pytest.logger.info(f"Running test {test_title}")
+        helper_comments.create_comment(payload=payload, expected_status=expected_status)

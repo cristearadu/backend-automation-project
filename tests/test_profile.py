@@ -1,8 +1,8 @@
 import pytest
-from core import HTTPStatusCodes
 from schemas import ProfileModel
 from helpers.helper_profile import HelperProfile
 from pydantic_core._pydantic_core import ValidationError
+from test_data import PROFILE_NEGATIVE_CASES
 
 
 @pytest.mark.smoke
@@ -42,21 +42,11 @@ def test_update_profile(faker_fixture):
 @pytest.mark.profile
 @pytest.mark.negative
 @pytest.mark.flaky_regression
-@pytest.mark.xfail(reason="Profile update negative cases (empty payload, invalid fields, empty name)")
-@pytest.mark.parametrize(
-    "payload",
-    [
-        {},  # Empty payload
-        {"name": ""},  # Empty name
-        {"invalid_field": "unexpected"},  # Invalid extra field
-    ],
-    ids=[
-        "empty_payload",
-        "empty_name",
-        "invalid_field"
-    ]
-)
-def test_update_profile_negative_cases(payload):
+@pytest.mark.parametrize("payload, test_title, expected_status", PROFILE_NEGATIVE_CASES)
+def test_update_profile_negative_cases(helper_profile, payload, test_title, expected_status):
     """Test negative scenarios for updating profile."""
-    helper = HelperProfile()
-    helper.update_profile(payload=payload, expected_status=HTTPStatusCodes.BAD_REQUEST.value)
+    pytest.logger.info(f"Running test {test_title}")
+    helper_profile.update_profile(
+        payload=payload,
+        expected_status=expected_status
+    )
