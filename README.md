@@ -1,8 +1,7 @@
 # 👨‍💻 Backend Automation Project – Automated Test Suite
 
-[![Backend Automation Tests](https://github.com/cristearadu/backend-automation-project/actions/workflows/automation-tests.yml)
+[![Backend Automation Tests](https://github.com/cristearadu/backend-automation-project/actions/workflows/automation-tests.yml/badge.svg)](https://github.com/cristearadu/backend-automation-project/actions/workflows/automation-tests.yml)
 ![Python](https://img.shields.io/badge/python-3.10-blue)
-
 ---
 
 ## ✨ Key Features
