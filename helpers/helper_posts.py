@@ -3,6 +3,10 @@ from .helper import Helper
 
 
 class HelperPosts(Helper):
+    """
+    Helper class for handling all operations related to /posts endpoints.
+    Includes create, retrieve, update, and delete functionalities.
+    """
     def __init__(self):
         super().__init__()
 

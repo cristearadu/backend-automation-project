@@ -3,6 +3,10 @@ from .helper import Helper
 
 
 class HelperProfile(Helper):
+    """
+    Helper class for managing the /profile endpoint.
+    Handles fetching and updating the profile information.
+    """
     def __init__(self):
         super().__init__()
 

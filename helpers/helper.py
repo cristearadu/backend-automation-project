@@ -3,6 +3,10 @@ from request_builders.request_builder_blog import BlogApiController
 
 
 class Helper:
+    """
+    Base helper class that provides generic API request functionality
+    used by other specific helper classes (Posts, Comments, Profile, Performance).
+    """
     def __init__(self):
         self.controller = BlogApiController()
 
