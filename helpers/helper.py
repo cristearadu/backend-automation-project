@@ -19,3 +19,8 @@ class Helper:
             except ValueError:
                 return {}
         return None
+
+    def _send_request_and_return_response(self, endpoint_key, **kwargs):
+        pytest.logger.info(f"Sending request: {endpoint_key}")
+        response = self.controller.request(endpoint_key, **kwargs)
+        return response

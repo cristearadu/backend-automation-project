@@ -4,7 +4,7 @@ import os
 import http.client as http_client
 from datetime import datetime
 from core import ROOT_WORKING_DIRECTORY, LOGS_FOLDER
-from helpers import HelperPosts, HelperComments, HelperProfile
+from helpers import HelperPosts, HelperComments, HelperProfile, HelperPerformance
 from faker import Faker
 
 
@@ -79,7 +79,7 @@ def pytest_collection_modifyitems(session, config, items):
     # Reorder items: smoke tests first
     items[:] = smoke_tests + other_tests
 
-    # TODO reorder test to always run profile -> posts -> comments
+    # TODO reorder test to always run profile -> posts -> comments -> e2e -> performance
 
 
 @pytest.fixture(scope="session")
@@ -100,3 +100,8 @@ def helper_comments():
 @pytest.fixture(scope='session')
 def helper_profile():
     yield HelperProfile()
+
+
+@pytest.fixture(scope='session')
+def helper_performance():
+    yield HelperPerformance()
