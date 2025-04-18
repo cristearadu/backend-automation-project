@@ -4,6 +4,7 @@
   "description": "API Testing Test for new joiners in QA",
   "main": "index.js",
   "scripts": {
+    "create-db": "node create_db.js",
      "start": "json-server --watch db.json --port 3000"
   },
   "keywords": [],
