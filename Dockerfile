@@ -24,6 +24,7 @@ COPY ./schemas ./schemas
 COPY ./conftest.py ./conftest.py
 COPY ./core ./core
 COPY ./request_builders ./request_builders
+COPY ./pytest.ini ./pytest.ini
 
 # Install Python dependencies
 RUN pip install --upgrade pip
