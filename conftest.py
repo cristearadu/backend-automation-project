@@ -71,15 +71,38 @@ def pytest_runtest_call(item):
 
 def pytest_collection_modifyitems(session, config, items):
     """
-    Ensures that smoke tests run first in any test run.
-    """
-    smoke_tests = [item for item in items if "smoke" in item.keywords]
-    other_tests = [item for item in items if "smoke" not in item.keywords]
+      Customizes the test collection order.
+      - Smoke tests are always prioritized first.
+      - Within both smoke and other tests:
+          - Tests are sorted in the following order:
+            profile -> posts -> comments -> e2e -> performance
+      """
 
-    # Reorder items: smoke tests first
-    items[:] = smoke_tests + other_tests
+    def get_priority(item):
+        """
+        Returns a tuple used for sorting:
+        (is_smoke, area_priority)
+        where smaller values run earlier.
+        """
+        is_smoke = "smoke" in item.keywords
+        if "profile" in item.keywords:
+            area = 0
+        elif "posts" in item.keywords:
+            area = 1
+        elif "comments" in item.keywords:
+            area = 2
+        elif "e2e" in item.keywords:
+            area = 3
+        elif "performance" in item.keywords:
+            area = 4
+        else:
+            area = 99  # unknown, put last
+        return not is_smoke, area  # smoke tests first (False < True), then area
 
-    # TODO reorder test to always run profile -> posts -> comments -> e2e -> performance
+    items.sort(key=get_priority)
+    pytest.logger.info("Final test execution order:")
+    for item in items:
+        pytest.logger.info(f" - {item.nodeid}")
 
 
 @pytest.fixture(scope="session")
