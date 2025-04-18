@@ -38,19 +38,6 @@
 
 ---
 
-## 📊 Test Suite Overview
-
-| Test Area   | Description                                          |
-|:------------|:-----------------------------------------------------|
-| Posts       | CRUD operations on `/posts` endpoint                 |
-| Comments    | CRUD operations and associations on `/comments`      |
-| Profile     | Data retrieval and update on `/profile`              |
-| E2E         | End-to-end testing flows for `/posts` and `comments` |
-| Performance | Rate limiting tests for the server                   |
-
-
----
-
 ## 🛋️ Directory Structure
 
 ```bash
@@ -113,8 +100,18 @@ GitHub Action Workflow file: `.github/workflows/api-tests.yml`
 | ![Allure Overview Screenshot](html-report-sample.png) | ![HTML Report Screenshot](github-actions-cicd-results.png)            |
 
 ---
-### 🧪 Test Suite Overview
 ## 📊 Test Suite Overview
+
+| Test Area   | Description                                          |
+|:------------|:-----------------------------------------------------|
+| Posts       | CRUD operations on `/posts` endpoint                 |
+| Comments    | CRUD operations and associations on `/comments`      |
+| Profile     | Data retrieval and update on `/profile`              |
+| E2E         | End-to-end testing flows for `/posts` and `comments` |
+| Performance | Rate limiting tests for the server                   |
+
+---
+## 📊 Test Cases Overview
 
 | **Test Name** | **Category** | **File** | **Description** |
 |:--------------|:-------------|:---------|:----------------|
